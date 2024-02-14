@@ -1,9 +1,0 @@
-{% extends "base.html"%}
-{% block start %}
-<div class="container mt-3 position-relative" style="top:90px">
-    {% if request.user.is_authenticated %}
-    <p>{{request.user.first_name}} {{request.user.last_name}}</p>
-    <p>{{request.user.username}}</p>
-    {% endif %}
-</div>
-{% endblock %}
