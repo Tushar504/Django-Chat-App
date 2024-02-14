@@ -1,0 +1,136 @@
+{% extends "base.html"%}
+{% block start %}
+<div class="col-12 px-2 position-relative text-align-center top-0" style="height:100%;">
+    <div class="alert alert-info position-fixed px-2 py-3 shadow-lg" role="alert" style="width: 73%;">
+        <h5 class="m-0">{% if receiver.receiver_type.name == "User" %}
+            {% if request.user.id == receiver.user_id.id %}
+                {{receiver.contact_id.username}}
+            {% else %}
+               {{receiver.user_id.username}}
+            {% endif %}
+            {% else %}
+               {{receiver.name}}
+            {% endif %}
+        </h5>
+    </div>
+    <div class="row d-flex justify-content-center position-relative" style="top: 70px;">
+        <div class="col-12">
+            <form>
+                <div class="form-group">
+                  {% if messages %}
+                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;max-height: 400px;  /* Adjust the max-height as needed */
+                  overflow-y: scroll;
+                "">
+                    {% for message in messages %}
+                        <div class="chat-message mt-2 {% if message.sender.id == request.user.id %}d-flex justify-content-end{% else %}d-flex justify-content-start{% endif %}">
+                            <div class="card" style="width: 18rem;">
+                                <div class="card-header">
+                                    {{ message.sender.username }}
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                  <li class="list-group-item">{{ message.content }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                </div>
+                <br/>
+                <div class="form-group d-flex" style="width: 100%;">
+                    <input class="form-control" placeholder="Enter text here" id="my_input" type="text" required></br>
+                    <input class="btn btn-primary btn-lg btn-block" id="submit_button" type="button" value="Send">
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>
+{{slug|json_script:"room_slug"}}
+
+<script>
+
+const chatbox = document.querySelector("#chatbox");
+
+  function scrollToBottom() {
+    chatbox.scrollTop = chatbox.scrollHeight;
+  }
+
+  scrollToBottom();
+
+    
+    const roomName= JSON.parse(document.getElementById('room_slug').textContent);
+    
+    const chatSocket = new WebSocket("ws://" + window.location.host +"/" + roomName);
+    
+    chatSocket.onopen = function (e) {
+      console.log("The connection was setup successfully !");
+    };
+    chatSocket.onclose = function (e) {
+      console.log("Something unexpected happened !");
+    };
+
+    document.querySelector("#my_input").focus();
+    document.querySelector("#my_input").onkeyup = function (e) {
+      if (e.keyCode == 13) {
+        e.preventDefault();
+        document.querySelector("#submit_button").click();
+      }
+    };
+    document.querySelector("#submit_button").onclick = function (e) {
+      var messageInput = document.querySelector(
+        "#my_input"
+      ).value;
+
+      if(messageInput.length == 0)
+        {
+            alert("Add some Input First Or Press Send Button!")
+        }
+        else
+        {
+          chatSocket.send(JSON.stringify({ message: messageInput, sender: "{{request.user}}", room_name: roomName}));
+        }
+      
+    };
+
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      var div = document.createElement("div");
+      
+      if (data.username === "{{ request.user.username }}") {
+        div.classList.add("chat-message", "mt-2", "d-flex" , "justify-content-end");
+      } else {
+        div.classList.add("chat-message", "mt-2", "d-flex", "justify-content-start");
+      }
+
+      
+      var div1 = document.createElement("div");
+      div1.classList.add("card");
+      div1.style.width = "18rem"
+      
+      var div2 = document.createElement("div");
+      div2.classList.add("card-header");
+      div2.innerHTML = data.username;
+
+      var ul = document.createElement("ul");
+      ul.classList.add("list-group", "list-group-flush")
+
+      var li = document.createElement("li");
+      li.classList.add("list-group-item");
+      li.innerHTML = data.message;
+
+      ul.appendChild(li);
+      div1.appendChild(div2);
+      div1.appendChild(ul);
+      div.appendChild(div1);
+                            
+      console.log(div)
+      document.querySelector("#my_input").value = "";
+      document.querySelector("#chatbox").appendChild(div);
+      scrollToBottom();
+    };
+  </script>
+
+    
+{% endblock %}

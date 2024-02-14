@@ -38,7 +38,7 @@ def register(request):
 def login_page(request):
 
     if request.user.is_authenticated:
-        return redirect("/api/auth/home")
+        return redirect("/?data=contacts")
 
     if request.method == "POST":
         data = request.POST
@@ -61,7 +61,7 @@ def login_page(request):
             next = request.GET.get("next")
             if next:
                 return redirect(next)
-            return redirect("/api/auth/home")
+            return redirect("/?data=contacts")
 
     return render(request, "login.html")
 
@@ -71,5 +71,3 @@ def logout_page(request):
     return redirect("/api/auth/login")
 
 
-def home(request):
-    return render(request, "home.html")
