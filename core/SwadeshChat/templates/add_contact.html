@@ -1,0 +1,18 @@
+{% extends "base.html"%}
+{% block start %}
+<div class="card text-center">
+    <div class="card-header">
+     Add New Contact
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">User: {{ user.username }}</h5>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    </div>
+    
+    <div class="card-footer text-body-secondary">
+    </div>
+  </div>
+{% endblock %}
