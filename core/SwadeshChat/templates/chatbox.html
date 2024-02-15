@@ -18,7 +18,7 @@
             <form>
                 <div class="form-group">
                   {% if messages %}
-                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;max-height: 400px;  /* Adjust the max-height as needed */
+                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
                   overflow-y: scroll;
                 "">
                     {% for message in messages %}
@@ -34,6 +34,10 @@
                         </div>
                     {% endfor %}
                   </div>
+                  {% else %}
+                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
+                  overflow-y: scroll;
+                ""></div>
                 {% endif %}
 
                 </div>

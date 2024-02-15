@@ -4,5 +4,6 @@ from .views import *
 
 urlpatterns = [
     path('', home, name="home"),
-    path('chat/<str:slug>', chatbox, name="chat")
+    path('chat/<str:slug>', chatbox, name="chat"),
+    path('add_contact/<int:user_id>', add_contact, name="add_contact")
 ]

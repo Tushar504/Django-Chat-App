@@ -12,12 +12,16 @@ def get_conditional_data(data, add_contact, request):
         data = []
         if len(user_contacts) > 0:
             for user in users:
+                check = True
                 for contact in user_contacts:
-                    if user != contact.user_id and user != contact.contact_id and user != request.user:
-                        data.append(user)
-        else:
+                    if user == contact.user_id or user == contact.contact_id:
+                        check = False
+                    
+                if check:
+                    data.append(user)
+        else:  
             for user in users:
                 if user != request.user:
                     data.append(user)
-    
+      
     return {"data": data, "add_contact": add_contact}
