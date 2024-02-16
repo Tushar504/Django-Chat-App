@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block start %}
+<div class="container mt-3 position-relative" style="top:90px">
+    <form class="col-md-6 col-10 mx-auto card p-3 shadow-lg" method="post">
+        {% csrf_token %}
+        <h2>New Group Creation</h2>
+        <hr>
+        {% if messages %}
+       
+        <div class="alert alert-primary" role="alert">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+         </div>
+        
+        {% endif %}
+        <div class="mb-3">
+          <label class="form-label">Group Name</label>
+          <input name="group_name" type="text" required class="form-control">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Add Members</label>
+            <div class="dropdown"> 
+                <button class="btn btn-success dropdown-toggle"
+                        type="button" 
+                        id="multiSelectDropdown"
+                        data-bs-toggle="dropdown" 
+                        aria-expanded="false"
+                        > 
+                    Select 
+                </button> 
+                <ul class="dropdown-menu overflow-y-scroll p-2" 
+                    style="height: 200px;"
+                    aria-labelledby="multiSelectDropdown"> 
+                    <li>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search">
+                    </li>
+                    {% for user in users_to_add %}
+                    <li> 
+                        <label> 
+                            <input type="checkbox" value="{{user.username}}"> 
+                            {{user.first_name}} {{user.last_name}} ({{user.username}})
+                        </label> 
+                    </li> 
+                    {% endfor %}
+                </ul> 
+            </div> 
+        </div>
+        <input type="hidden" name="selected_members" id="selectedMembersInput">
+        <button type="submit" class="btn btn-primary">Create Group</button>
+    </form>
+</div>
+
+  
+<script> 
+    const dropdownButton = document.getElementById('multiSelectDropdown'); 
+    const dropdownMenu = document.querySelector('.dropdown-menu'); 
+    const checkboxes = dropdownMenu.querySelectorAll('input[type="checkbox"]');
+    const searchInput = document.getElementById('searchInput');
+    const selectedMembersInput = document.getElementById('selectedMembersInput');
+
+    let mySelectedItems = [];
+
+    function handleCB(event) { 
+        const checkbox = event.target; 
+        if (checkbox.checked) { 
+            mySelectedItems.push(checkbox.value); 
+        } else { 
+            mySelectedItems = mySelectedItems.filter((item) => item !== checkbox.value); 
+        } 
+
+        dropdownButton.innerText = mySelectedItems.length > 0 
+            ? mySelectedItems.join(', ') 
+            : 'Select Items'; 
+
+        updateSelectedMembersInput();
+    } 
+    
+    function updateSelectedMembersInput() {
+        selectedMembersInput.value = mySelectedItems.join(',');
+    }
+
+    function filterItems() {
+        const filter = searchInput.value.toUpperCase();
+        checkboxes.forEach(function(checkbox) {
+            const label = checkbox.parentNode.textContent.toUpperCase();
+            checkbox.parentNode.style.display = label.indexOf(filter) > -1 ? '' : 'none';
+        });
+    }
+
+    checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener('change', handleCB);
+    });
+
+    searchInput.addEventListener('input', filterItems);
+</script> 
+{% endblock %}

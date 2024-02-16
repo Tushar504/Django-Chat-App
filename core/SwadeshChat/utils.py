@@ -2,7 +2,8 @@ from .models import *
 from django.db.models import Q
 def get_conditional_data(data, add_contact, request):
     if data == "groups":
-        data = Group.objects.all()
+        data = GroupMember.objects.filter(user=request.user)
+        data = [group.group for group in data]
     elif data == "contacts":
         data = Contact.objects.filter(Q(user_id=request.user.id) | Q(contact_id=request.user.id))
     elif data == 'add_contact':
