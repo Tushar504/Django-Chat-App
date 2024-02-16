@@ -2,11 +2,11 @@
 {% block start %}
 <div class="col-12 px-2 position-relative text-align-center top-0" style="height:100%;">
     <div class="alert alert-info position-fixed px-2 py-3 shadow-lg" role="alert" style="width: 73%;">
-        <h5 class="m-0">{% if receiver.receiver_type.name == "User" %}
+        <h5 id="chat-head" class="m-0">{% if receiver.receiver_type.name == "User" %}
             {% if request.user.id == receiver.user_id.id %}
-                {{receiver.contact_id.username}}
+            {{receiver.contact_id.first_name}} {{receiver.contact_id.last_name}} ({{receiver.contact_id.username}})
             {% else %}
-               {{receiver.user_id.username}}
+            {{receiver.user_id.first_name}} {{receiver.user_id.last_name}} ({{receiver.user_id.username}})
             {% endif %}
             {% else %}
                {{receiver.name}}
@@ -25,7 +25,7 @@
                         <div class="chat-message mt-2 {% if message.sender.id == request.user.id %}d-flex justify-content-end{% else %}d-flex justify-content-start{% endif %}">
                             <div class="card" style="width: 18rem;">
                                 <div class="card-header">
-                                    {{ message.sender.username }}
+                                    {{message.sender.first_name}} {{message.sender.last_name}} ({{ message.sender.username }})
                                 </div>
                                 <ul class="list-group list-group-flush">
                                   <li class="list-group-item">{{ message.content }}</li>
@@ -113,9 +113,16 @@ const chatbox = document.querySelector("#chatbox");
       div1.classList.add("card");
       div1.style.width = "18rem"
       
+      chat_head = document.querySelector("#chat-head").innerHTML;
+
       var div2 = document.createElement("div");
       div2.classList.add("card-header");
-      div2.innerHTML = data.username;
+      if (data.username === "{{ request.user.username }}") {
+        div2.innerHTML = "{{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})";
+      } else {
+        div2.innerHTML = chat_head;
+      }
+      
 
       var ul = document.createElement("ul");
       ul.classList.add("list-group", "list-group-flush")

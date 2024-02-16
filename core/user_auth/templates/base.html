@@ -11,7 +11,7 @@
 <div>
 <nav class="z-2 col-12 navbar bg-primary position-fixed top-0 shadow-lg">
   <div class="container-fluid">
-    <a href="/"><span class="navbar-brand mb-0 h1">SwadeshChat</span></a>
+    <a href="/"><span class="navbar-brand mb-0 h1 text-white">SwadeshChat</span></a>
     {% if request.user.is_authenticated %}
     <a href="/api/auth/logout" class="btn btn-danger" >Logout</a>
     {% else %}
@@ -19,9 +19,8 @@
     {% endif %}
 </div>
 </nav>
-<div class="position-relative d-flex col-12" style="top: 55px;">
-    {% if request.user.is_authenticated %}
-    <div class="card position-relative col-3" style="height: 89vh;">
+<div class="position-relative d-flex col-12 {% if not request.user.is_authenticated %}justify-content-center{% endif %}" style="top: 55px;">
+    <div class="card border-0 position-relative col-3 {% if not request.user.is_authenticated %}d-none{% endif %}" style="height: 89vh;">
         <nav class="z-10 navbar position-fixed col-3 shadow-lg">
             <div class="container-fluid d-flex col-12">
               <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=contacts" class="btn {% if request.GET.data == 'contacts'  %} bg-primary text-white{% endif %}">Contacts</a>
@@ -29,17 +28,18 @@
               <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=add_contact" class="btn {% if request.GET.data == 'add_contact'  %} bg-primary text-white {% endif %}">Add Contact</a>
             </div>
           </nav>
-          <ul class="list-group list-group-flush position-relative" style="top:55px">
+          <ul class="list-group border-end list-group-flush position-relative" style="top:55px; height: 83%;">
             {% for group in groups %}
              {% if request.GET.data == "groups" %}
               <a class="text-decoration-none" href="/chat/{{group.slug}}?receiver_type={{group.receiver_type.name}}&data=groups">
                 <li class="card-footer shadow-lg">{{group.name}}</li>
               </a>
+              
               {% else %}
               {% if add_contact %}
               <a class="text-decoration-none" href="/add_contact/{{group.id}}?receiver_type={{group.receiver_type.name}}&data=add_contact">
               <li class="card-footer shadow-lg">
-               {{group.username}}
+                {{group.first_name}} {{group.last_name}} ({{group.username}})
               </li>
               </a>
               {% else %}
@@ -56,8 +56,10 @@
               {% endif %}
             {% endfor %}
           </ul>
+          {% if request.GET.data == "groups" %}
+          <a href="/create_group" class="btn btn-primary position-fixed col-3" style="bottom: 10px">Create Group</a>
+          {% endif %}
     </div>
-    {% endif %}
     <div class="position-relative col-9" style="height: 89vh;">
         {% block start %}
 
