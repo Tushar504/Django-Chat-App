@@ -1,8 +1,13 @@
 {% extends "base.html"%}
 {% block start %}
 <div class="col-12 px-2 position-relative text-align-center top-0" style="height:100%;">
-    <div class="alert alert-info position-fixed px-2 py-3 shadow-lg" role="alert" style="width: 73%;">
-        <h5 id="chat-head" class="m-0">{% if receiver.receiver_type.name == "User" %}
+    <div class="alert d-flex align-items-center alert-info position-fixed px-2 py-2 shadow-lg" role="alert" style="width: 73%;">
+      {% if receiver.receiver_type.name == "User" %}
+       <img class="me-2 rounded-circle" style="width: 40px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" alt="">
+       {% else %}
+       <img class="me-2 rounded-circle" style="width: 40px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9CRaCEAvvrvyG9PBwRq9tY8a9G_kn2xDDgwgAT4VTMa_TlGzRNM9hFXGEzBN5aaTa6fg&usqp=CAU" alt="">
+       {% endif %}
+       <h5 id="chat-head" class="m-0 fs-2">{% if receiver.receiver_type.name == "User" %}
             {% if request.user.id == receiver.user_id.id %}
             {{receiver.contact_id.first_name}} {{receiver.contact_id.last_name}} ({{receiver.contact_id.username}})
             {% else %}
@@ -18,15 +23,17 @@
             <form>
                 <div class="form-group">
                   {% if messages %}
-                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
+                  <div class="jumbotron mb-4 pe-3" id="chatbox" style="height: 400px;  /* Adjust the max-height as needed */
                   overflow-y: scroll;
                 "">
                     {% for message in messages %}
                         <div class="chat-message mt-2 {% if message.sender.id == request.user.id %}d-flex justify-content-end{% else %}d-flex justify-content-start{% endif %}">
                             <div class="card" style="width: 18rem;">
+                              {% if receiver.receiver_type.name == "Group" %}
                                 <div class="card-header">
                                     {{message.sender.first_name}} {{message.sender.last_name}} ({{ message.sender.username }})
                                 </div>
+                                {% endif %}
                                 <ul class="list-group list-group-flush">
                                   <li class="list-group-item">{{ message.content }}</li>
                                 </ul>
@@ -35,7 +42,7 @@
                     {% endfor %}
                   </div>
                   {% else %}
-                  <div class="jumbotron mb-4" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
+                  <div class="jumbotron mb-2" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
                   overflow-y: scroll;
                 ""></div>
                 {% endif %}
@@ -113,16 +120,19 @@ const chatbox = document.querySelector("#chatbox");
       div1.classList.add("card");
       div1.style.width = "18rem"
       
-      chat_head = document.querySelector("#chat-head").innerHTML;
+      if ("{{ request.GET.receiver_type }}" == "Group"){
+        chat_head = document.querySelector("#chat-head").innerHTML;
 
-      var div2 = document.createElement("div");
-      div2.classList.add("card-header");
-      if (data.username === "{{ request.user.username }}") {
-        div2.innerHTML = "{{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})";
-      } else {
-        div2.innerHTML = chat_head;
+        var div2 = document.createElement("div");
+        div2.classList.add("card-header");
+        if (data.username === "{{ request.user.username }}") {
+          div2.innerHTML = "{{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})";
+        } else {
+          div2.innerHTML = chat_head;
+        }
+
+        div1.appendChild(div2);
       }
-      
 
       var ul = document.createElement("ul");
       ul.classList.add("list-group", "list-group-flush")
@@ -132,7 +142,7 @@ const chatbox = document.querySelector("#chatbox");
       li.innerHTML = data.message;
 
       ul.appendChild(li);
-      div1.appendChild(div2);
+      
       div1.appendChild(ul);
       div.appendChild(div1);
                             

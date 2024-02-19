@@ -1,5 +1,7 @@
-from .models import *
 from django.db.models import Q
+from .models import User, GroupMember, Contact
+
+
 def get_conditional_data(data, add_contact, request):
     if data == "groups":
         data = GroupMember.objects.filter(user=request.user)
@@ -17,12 +19,12 @@ def get_conditional_data(data, add_contact, request):
                 for contact in user_contacts:
                     if user == contact.user_id or user == contact.contact_id:
                         check = False
-                    
+
                 if check:
                     data.append(user)
-        else:  
+        else:
             for user in users:
                 if user != request.user:
                     data.append(user)
-      
+
     return {"data": data, "add_contact": add_contact}
