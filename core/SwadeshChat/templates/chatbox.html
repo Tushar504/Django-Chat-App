@@ -1,136 +1,168 @@
 {% extends "base.html"%}
 {% block start %}
 <div class="col-12 px-2 position-relative text-align-center top-0" style="height:100%;">
-    <div class="alert d-flex align-items-center alert-info position-fixed px-2 py-2 shadow-lg" role="alert" style="width: 73%;">
-      {% if receiver.receiver_type.name == "User" %}
-       <img class="me-2 rounded-circle" style="width: 40px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" alt="">
-       {% else %}
-       <img class="me-2 rounded-circle" style="width: 40px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9CRaCEAvvrvyG9PBwRq9tY8a9G_kn2xDDgwgAT4VTMa_TlGzRNM9hFXGEzBN5aaTa6fg&usqp=CAU" alt="">
-       {% endif %}
-       <h5 id="chat-head" class="m-0 fs-2">{% if receiver.receiver_type.name == "User" %}
-            {% if request.user.id == receiver.user_id.id %}
-            {{receiver.contact_id.first_name}} {{receiver.contact_id.last_name}} ({{receiver.contact_id.username}})
-            {% else %}
-            {{receiver.user_id.first_name}} {{receiver.user_id.last_name}} ({{receiver.user_id.username}})
-            {% endif %}
-            {% else %}
-               {{receiver.name}}
-            {% endif %}
-        </h5>
-    </div>
-    <div class="row d-flex justify-content-center position-relative" style="top: 70px;">
-        <div class="col-12">
-            <form>
-                <div class="form-group">
-                  {% if messages %}
-                  <div class="jumbotron mb-4 pe-3" id="chatbox" style="height: 400px;  /* Adjust the max-height as needed */
+  <div class="alert d-flex align-items-center alert-info position-fixed px-2 py-2 shadow-lg" role="alert"
+    style="width: 73%;">
+    {% if receiver.receiver_type.name == "User" %}
+    <img class="me-2 rounded-circle" style="width: 40px;"
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" alt="">
+    {% else %}
+    <img class="me-2 rounded-circle" style="width: 40px;"
+      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9CRaCEAvvrvyG9PBwRq9tY8a9G_kn2xDDgwgAT4VTMa_TlGzRNM9hFXGEzBN5aaTa6fg&usqp=CAU"
+      alt="">
+    {% endif %}
+    <h5 id="chat-head" class="m-0 fs-3">{% if receiver.receiver_type.name == "User" %}
+      {% if request.user.id == receiver.user_id.id %}
+      {{receiver.contact_id.first_name}} {{receiver.contact_id.last_name}} ({{receiver.contact_id.username}})
+      {% else %}
+      {{receiver.user_id.first_name}} {{receiver.user_id.last_name}} ({{receiver.user_id.username}})
+      {% endif %}
+      {% else %}
+      {{receiver.name}}
+      {% endif %}
+    </h5>
+  </div>
+  <div class="row d-flex justify-content-center position-relative" style="top: 70px;">
+    <div class="col-12">
+      <form>
+        <div class="form-group">
+          {% if messages %}
+          <div class="jumbotron mb-4 pe-3" id="chatbox" style="height: 400px;  /* Adjust the max-height as needed */
                   overflow-y: scroll;
                 "">
                     {% for message in messages %}
-                        <div class="chat-message mt-2 {% if message.sender.id == request.user.id %}d-flex justify-content-end{% else %}d-flex justify-content-start{% endif %}">
-                            <div class="card" style="width: 18rem;">
-                              {% if receiver.receiver_type.name == "Group" %}
-                                <div class="card-header">
-                                    {{message.sender.first_name}} {{message.sender.last_name}} ({{ message.sender.username }})
-                                </div>
-                                {% endif %}
-                                <ul class="list-group list-group-flush">
-                                  <li class="list-group-item">{{ message.content }}</li>
-                                </ul>
-                            </div>
-                        </div>
-                    {% endfor %}
-                  </div>
-                  {% else %}
-                  <div class="jumbotron mb-2" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
+                        <div class=" chat-message mt-2 {% if message.message.sender.id == request.user.id %}d-flex
+            justify-content-end{% else %}d-flex justify-content-start{% endif %}">
+            <div class="card" style="width: 18rem;">
+              {% if receiver.receiver_type.name == "Group" and message.message.sender != request.user%}
+              <div class="card-header">
+                {{message.message.sender.first_name}} {{message.message.sender.last_name}} ({{
+                message.message.sender.username }})
+              </div>
+              {% endif %}
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item position-relative border border-primary">{{ message.message.content }}
+                  {% if message.message.sender == request.user %}
+                  <span class="position-absolute end-0 bottom-0 px-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"
+                      id="double-check">
+                      <path fill="{% if message.read_receipt %}#3747D6{% else %}#BDBDBD {% endif %}" fill-rule="evenodd"
+                        d="M6.00008 15.5858L15.293 6.29289 16.7072 7.70711 6.70718 17.7071C6.51965 17.8946 6.26529 18 6.00008 18 5.73486 18 5.4805 17.8946 5.29297 17.7071L1.29297 13.7071 2.70718 12.2929 6.00008 15.5858zM12.0003 15.5859L21.2928 6.29291 22.7071 7.70709 12.7075 17.7071C12.3171 18.0976 11.684 18.0976 11.2934 17.7072L9.79297 16.2072 11.207 14.7928 12.0003 15.5859z"
+                        clip-rule="evenodd"></path>
+                    </svg>
+                  </span>
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="jumbotron mb-2" id="chatbox" style="padding: 4px 2px;height: 400px;  /* Adjust the max-height as needed */
                   overflow-y: scroll;
                 ""></div>
                 {% endif %}
 
                 </div>
                 <br/>
-                <div class="form-group d-flex" style="width: 100%;">
-                    <input class="form-control" placeholder="Enter text here" id="my_input" type="text" required></br>
-                    <input class="btn btn-primary btn-lg btn-block" id="submit_button" type="button" value="Send">
-                </div>
-                
-            </form>
+                <div class=" form-group d-flex" style="width: 100%;">
+          <input class="form-control" placeholder="Enter text here" id="my_input" type="text" required></br>
+          <input class="btn btn-primary btn-lg btn-block" id="submit_button" type="button" value="Send">
         </div>
+
+      </form>
     </div>
+  </div>
 </div>
 {{slug|json_script:"room_slug"}}
 
+
 <script>
 
-const chatbox = document.querySelector("#chatbox");
+  const chatbox = document.querySelector("#chatbox");
 
   function scrollToBottom() {
     chatbox.scrollTop = chatbox.scrollHeight;
   }
 
   scrollToBottom();
+  
+  const roomName = JSON.parse(document.getElementById('room_slug').textContent);
 
-    
-    const roomName= JSON.parse(document.getElementById('room_slug').textContent);
-    
-    const chatSocket = new WebSocket("ws://" + window.location.host +"/" + roomName);
-    
-    chatSocket.onopen = function (e) {
-      console.log("The connection was setup successfully !");
-    };
-    chatSocket.onclose = function (e) {
-      console.log("Something unexpected happened !");
-    };
+  const chatSocket = new WebSocket("ws://" + window.location.host + "/" + roomName);
 
-    document.querySelector("#my_input").focus();
-    document.querySelector("#my_input").onkeyup = function (e) {
-      if (e.keyCode == 13) {
-        e.preventDefault();
-        document.querySelector("#submit_button").click();
+  chatSocket.onopen = function (e) {
+    console.log("The connection was setup successfully !");
+  };
+  chatSocket.onclose = function (e) {
+    console.log("Something unexpected happened !");
+  };
+
+  document.querySelector("#my_input").focus();
+  document.querySelector("#my_input").onkeyup = function (e) {
+    if (e.keyCode == 13) {
+      e.preventDefault();
+      document.querySelector("#submit_button").click();
+    }
+  };
+  document.querySelector("#submit_button").onclick = function (e) {
+    var messageInput = document.querySelector(
+      "#my_input"
+    ).value;
+
+    if (messageInput.length == 0) {
+      alert("Add some Input First Or Press Send Button!")
+    }
+    else {
+      chatSocket.send(JSON.stringify({ message: messageInput, sender: "{{request.user}}", room_name: roomName, receiver_type: "{{request.GET.receiver_type}}" }));
+    }
+
+  };
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+
+    if (data.reload) {
+      if (JSON.parse(data.reload)['refresh']) {
+        fetch('http://' + window.location.host + "/chat/" + roomName + "/refresh")
+          .then(response => response.json())
+          .then(data => {
+            appendMessageData(data.data, true)
+          })
+          .catch(error => console.error('Error fetching chat data:', error));
       }
-    };
-    document.querySelector("#submit_button").onclick = function (e) {
-      var messageInput = document.querySelector(
-        "#my_input"
-      ).value;
-
-      if(messageInput.length == 0)
-        {
-            alert("Add some Input First Or Press Send Button!")
-        }
-        else
-        {
-          chatSocket.send(JSON.stringify({ message: messageInput, sender: "{{request.user}}", room_name: roomName}));
-        }
+    }
+    else {
       
-    };
+      appendMessageData([data])
 
-    chatSocket.onmessage = function (e) {
-      const data = JSON.parse(e.data);
+    }
+  }
+
+
+  function appendMessageData(data, refresh = false) {
+    if (refresh) {
+      document.querySelector("#chatbox").innerHTML = ""
+    }
+    data.map((ele) => {
       var div = document.createElement("div");
-      
-      if (data.username === "{{ request.user.username }}") {
-        div.classList.add("chat-message", "mt-2", "d-flex" , "justify-content-end");
+
+      if (ele.sender.username === "{{ request.user.username }}") {
+        div.classList.add("chat-message", "mt-2", "d-flex", "justify-content-end");
       } else {
         div.classList.add("chat-message", "mt-2", "d-flex", "justify-content-start");
       }
 
-      
+
       var div1 = document.createElement("div");
       div1.classList.add("card");
       div1.style.width = "18rem"
-      
-      if ("{{ request.GET.receiver_type }}" == "Group"){
-        chat_head = document.querySelector("#chat-head").innerHTML;
 
+      if ("{{ request.GET.receiver_type }}" == "Group") {
         var div2 = document.createElement("div");
         div2.classList.add("card-header");
-        if (data.username === "{{ request.user.username }}") {
-          div2.innerHTML = "{{request.user.first_name}} {{request.user.last_name}} ({{request.user.username}})";
-        } else {
-          div2.innerHTML = chat_head;
-        }
-
+        div2.innerHTML = `${data.sender["first_name"]} ${ele.sender["last_name"]} (${ele.sender["username"]})`;
         div1.appendChild(div2);
       }
 
@@ -138,20 +170,30 @@ const chatbox = document.querySelector("#chatbox");
       ul.classList.add("list-group", "list-group-flush")
 
       var li = document.createElement("li");
-      li.classList.add("list-group-item");
-      li.innerHTML = data.message;
+      li.classList.add("list-group-item", "position-relative", "border", "border-primary");
+      li.innerHTML = ele.message;
+
+      if (ele.sender.username == "{{request.user.username}}") {
+        const span = document.createElement("span");
+        span.classList.add("position-absolute", "end-0", "bottom-0", "px-1");
+        span.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" id="double-check"><path fill="${ele.read_receipt ? "#3747D6" : "#BDBDBD"}" fill-rule="evenodd" d="M6.00008 15.5858L15.293 6.29289 16.7072 7.70711 6.70718 17.7071C6.51965 17.8946 6.26529 18 6.00008 18 5.73486 18 5.4805 17.8946 5.29297 17.7071L1.29297 13.7071 2.70718 12.2929 6.00008 15.5858zM12.0003 15.5859L21.2928 6.29291 22.7071 7.70709 12.7075 17.7071C12.3171 18.0976 11.684 18.0976 11.2934 17.7072L9.79297 16.2072 11.207 14.7928 12.0003 15.5859z" clip-rule="evenodd"></path></svg>`
+        li.appendChild(span);
+      }
 
       ul.appendChild(li);
-      
+
       div1.appendChild(ul);
       div.appendChild(div1);
-                            
-      console.log(div)
-      document.querySelector("#my_input").value = "";
-      document.querySelector("#chatbox").appendChild(div);
-      scrollToBottom();
-    };
-  </script>
 
-    
+      document.querySelector("#my_input").value = "";
+     
+      document.querySelector("#chatbox").appendChild(div)
+      
+      ;
+      return scrollToBottom();
+    })
+  }
+</script>
+
+
 {% endblock %}
