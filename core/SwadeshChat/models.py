@@ -38,8 +38,20 @@ class GroupMember(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class Status(models.Model):
+    name = models.CharField(max_length=50)
+
+
 class Message(models.Model):
     content = models.TextField()
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     slug = models.SlugField(max_length=10)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class MessageStatus(models.Model):
+    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

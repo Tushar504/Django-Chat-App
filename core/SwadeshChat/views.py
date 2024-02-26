@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from django.contrib import messages
-from .models import User, MemberType, Message, Group, GroupMember, Contact, ReceiverType
+from .models import User, MemberType, Message, Group, GroupMember, Contact, ReceiverType, MessageStatus, Status
 from .utils import get_conditional_data
 
 
@@ -31,10 +32,43 @@ def chatbox(request, slug):
     elif receiver_type == "Group":
         receiver = Group.objects.get(slug=slug)
 
-    messages = Message.objects.filter(slug=slug).order_by('created_at')
+    status_update = MessageStatus.objects.filter(message__slug=slug, status__name="DELIVERED", user=request.user)
+    status_update.update(status=Status.objects.get(name="SEEN"))
+    messages_with_status = Message.objects.filter(slug=slug).prefetch_related('messagestatus_set__status').order_by('created_at')
 
+    messages = []
+
+    for message in messages_with_status:
+        read_receipt = True
+        for message_status in message.messagestatus_set.all():
+            if message_status.status.name == "DELIVERED":
+                read_receipt = False
+                break
+
+        messages.append({"message": message, "read_receipt": read_receipt})
     context = {"slug": slug, "receiver": receiver, "messages": messages, "groups": data["data"],  "add_contact": data["add_contact"],  "base_url": base_url}
     return render(request, "chatbox.html", context=context)
+
+
+def get_chatdata(request, slug):
+    messages_with_status = Message.objects.filter(slug=slug).prefetch_related('messagestatus_set__status').order_by('created_at')
+    messages = []
+
+    for message in messages_with_status:
+        read_receipt = True
+        for message_status in message.messagestatus_set.all():
+            if message_status.status.name == "DELIVERED":
+                read_receipt = False
+                break
+
+        messages.append({"message": message.content,
+                         "sender": {"username": message.sender.username,
+                                    "first_name": message.sender.first_name,
+                                    "last_name": message.sender.last_name},
+                         "read_receipt": read_receipt,
+                         "created_at": message.created_at})
+
+    return JsonResponse({"data": messages}, safe=False)
 
 
 def add_contact(request, user_id):
@@ -90,6 +124,5 @@ def create_group(request):
     base_url = request.get_full_path().split('?')[0]
 
     users_to_add = User.objects.exclude(id=request.user.id).all()
-    print(users_to_add)
 
     return render(request, "create_group.html", {"users_to_add": users_to_add, "groups": data["data"], "base_url": base_url, "add_contact": data["add_contact"]})
