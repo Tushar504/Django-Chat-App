@@ -33,7 +33,7 @@
                     {% for message in messages %}
                         <div class=" chat-message mt-2 {% if message.message.sender.id == request.user.id %}d-flex
             justify-content-end{% else %}d-flex justify-content-start{% endif %}">
-            <div class="card" style="width: 18rem;">
+            <div class="card border border-primary" style="width: 18rem;">
               {% if receiver.receiver_type.name == "Group" and message.message.sender != request.user%}
               <div class="card-header">
                 {{message.message.sender.first_name}} {{message.message.sender.last_name}} ({{
@@ -41,7 +41,7 @@
               </div>
               {% endif %}
               <ul class="list-group list-group-flush">
-                <li class="list-group-item position-relative border border-primary">{{ message.message.content }}
+                <li class="list-group-item position-relative">{{ message.message.content }}
                   {% if message.message.sender == request.user %}
                   <span class="position-absolute end-0 bottom-0 px-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"
@@ -128,7 +128,10 @@
         fetch('http://' + window.location.host + "/chat/" + roomName + "/refresh")
           .then(response => response.json())
           .then(data => {
-            appendMessageData(data.data, true)
+            if (data){
+              appendMessageData(data.data, true)
+            }
+            
           })
           .catch(error => console.error('Error fetching chat data:', error));
       }
@@ -156,13 +159,13 @@
 
 
       var div1 = document.createElement("div");
-      div1.classList.add("card");
+      div1.classList.add("card", "border", "border-primary");
       div1.style.width = "18rem"
 
       if ("{{ request.GET.receiver_type }}" == "Group") {
         var div2 = document.createElement("div");
         div2.classList.add("card-header");
-        div2.innerHTML = `${data.sender["first_name"]} ${ele.sender["last_name"]} (${ele.sender["username"]})`;
+        div2.innerHTML = `${ele.sender["first_name"]} ${ele.sender["last_name"]} (${ele.sender["username"]})`;
         div1.appendChild(div2);
       }
 
@@ -170,7 +173,7 @@
       ul.classList.add("list-group", "list-group-flush")
 
       var li = document.createElement("li");
-      li.classList.add("list-group-item", "position-relative", "border", "border-primary");
+      li.classList.add("list-group-item", "position-relative");
       li.innerHTML = ele.message;
 
       if (ele.sender.username == "{{request.user.username}}") {
