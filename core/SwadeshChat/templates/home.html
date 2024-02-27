@@ -1,15 +1,13 @@
 {% extends "base.html"%}
 {% block start %}
 <div class="container mt-3 position-relative" style="top:90px">
-<div class="card text-center">
-        <div class="card-header">
-        </div>
-        <div class="card-body">
-          <h5 class="card-title">Welcome to SwadeshChat {{request.user}}</h5>
-          <p class="card-text"></p>
-        </div>
-        <div class="card-footer text-body-secondary">
-        </div>
+  <div class="container mt-4 mb-4 p-3 d-flex justify-content-center">
+    <div class="card p-4">
+      <div class=" image d-flex flex-column justify-content-center align-items-center"> <button
+          class="btn btn-secondary"> <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" height="100" width="100" /></button>
+        <span class="name mt-3">{{request.user.first_name}} {{request.user.last_name}}</span> <span class="idd">@{{request.user.username}}</span>
       </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
