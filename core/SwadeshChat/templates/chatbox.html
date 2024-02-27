@@ -1,7 +1,7 @@
 {% extends "base.html"%}
 {% block start %}
 <div class="col-12 px-2 position-relative text-align-center top-0" style="height:100%;">
-  <div class="alert d-flex align-items-center alert-info position-fixed px-2 py-2 shadow-lg" role="alert"
+  <div class="alert bg-success text-white d-flex align-items-center alert-info position-fixed px-2 py-2 shadow-lg" role="alert"
     style="width: 73%;">
     {% if receiver.receiver_type.name == "User" %}
     <img class="me-2 rounded-circle" style="width: 40px;"
@@ -67,8 +67,8 @@
                 </div>
                 <br/>
                 <div class=" form-group d-flex" style="width: 100%;">
-          <input class="form-control" placeholder="Enter text here" id="my_input" type="text" required></br>
-          <input class="btn btn-primary btn-lg btn-block" id="submit_button" type="button" value="Send">
+          <input class="form-control me-2" placeholder="Enter text here" id="my_input" type="text" required>
+          <input class="btn btn-success btn-lg btn-block" id="submit_button" type="button" value="Send">
         </div>
 
       </form>

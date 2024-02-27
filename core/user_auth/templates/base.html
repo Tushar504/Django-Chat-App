@@ -21,25 +21,25 @@
 </nav>
 <div class="position-relative d-flex col-12 {% if not request.user.is_authenticated %}justify-content-center{% endif %}" style="top: 55px;">
     <div class="card border-end border-0 col-sm-3 d-sm-block d-none {% if not request.user.is_authenticated %}d-none{% endif %}" style="height: 89vh;">
-        <nav class="z-10 navbar position-fixed col-3 shadow-lg">
-            <div class="container-fluid d-flex col-12">
-              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=contacts" class="btn {% if request.GET.data == 'contacts'  %} bg-primary text-white{% endif %}">Contacts</a>
-              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=groups" class="btn {% if request.GET.data == 'groups'  %} bg-primary text-white{% endif %}">Groups</a>
-              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=add_contact" class="btn {% if request.GET.data == 'add_contact'  %} bg-primary text-white {% endif %}">Add Contact</a>
+        <nav class="z-10 navbar bg-success position-fixed col-3 shadow-lg">
+            <div class="container-fluid  d-flex col-12">
+              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=contacts" class="btn fw-bold{% if request.GET.data == 'contacts'  %} bg-primary {% endif %} text-white">Contacts</a>
+              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=groups" class="btn fw-bold{% if request.GET.data == 'groups'  %} bg-primary {% endif %} text-white">Groups</a>
+              <a href="{{ base_url }}{% if request.path == '/' %}?{% else %}?receiver_type={{request.GET.receiver_type}}&{% endif %}data=add_contact" class="btn fw-bold{% if request.GET.data == 'add_contact'  %} bg-primary  {% endif %} text-white">Add Contact</a>
             </div>
           </nav>
           <ul class="list-group list-group-flush position-relative" style="top:55px; height: 83%;">
             {% for group in groups %}
              {% if request.GET.data == "groups" %}
               <a class="text-decoration-none text-primary-emphasis fw-medium" href="/chat/{{group.slug}}?receiver_type={{group.receiver_type.name}}&data=groups">
-                <li class="card-footer shadow-lg">
+                <li class="card-footer bg-white shadow-lg">
                   <img class="col-1 me-2 rounded-circle" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT9CRaCEAvvrvyG9PBwRq9tY8a9G_kn2xDDgwgAT4VTMa_TlGzRNM9hFXGEzBN5aaTa6fg&usqp=CAU" alt="">
                   {{group.name}}</li>
               </a>
               {% else %}
               {% if add_contact %}
               <a class="text-decoration-none text-primary-emphasis fw-medium" href="/add_contact/{{group.id}}?receiver_type={{group.receiver_type.name}}&data=add_contact">
-              <li class="card-footer shadow-lg">
+              <li class="card-footer bg-white shadow-lg">
                 <img class="col-1 me-2 rounded-circle" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" alt="">
 
                 {{group.first_name}} {{group.last_name}} ({{group.username}})
@@ -47,7 +47,7 @@
               </a>
               {% else %}
               <a class="text-decoration-none text-primary-emphasis fw-medium" href="/chat/{{group.slug}}?receiver_type={{group.receiver_type.name}}&data=contacts">
-                <li class="card-footer shadow-lg">
+                <li class="card-footer bg-white shadow-lg">
                     <img class="col-1 me-2 rounded-circle" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSzX0xOtZCsuL9TiUwztRm8qSp3tX4pMdSioj-Oe1Mhjw&s" alt="">
 
                     {% if request.user.id == group.user_id.id %}
@@ -62,7 +62,7 @@
             {% endfor %}
           </ul>
           {% if request.GET.data == "groups" %}
-          <a href="/create_group" class="btn btn-primary position-fixed col-3" style="bottom: 20px">Create Group</a>
+          <a href="/create_group" class="btn btn-success position-fixed col-3" style="bottom: 20px">Create Group</a>
           {% endif %}
     </div>
     <div class="position-relative col-9" style="height: 89vh;">
